@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HabitReward - Build Better Habits</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
+    <style>
+        :root {
+            /* Light theme variables */
+            --primary: #4c6ef5;
+            --secondary: #38d9a9;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --success: #40c057;
+            --danger: #fa5252;
+            --warning: #fd7e14;
+            --info: #15aabf;
+            --background: #f5f7fa;
+            --card-bg: white;
+            --text: #212529;
+            --border: #ddd;
+            --header-bg: white;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #5c7cfa;
+            --secondary: #3dd5b0;
+            --dark: #e9ecef;
+            --light: #212529;
+            --success: #51cf66;
+            --danger: #ff6b6b;
+            --warning: #ffa94d;
+            --info: #22b8cf;
+            --background: #121212;
+            --card-bg: #1e1e1e;
+            --text: #f8f9fa;
+            --border: #444;
+            --header-bg: #1a1a1a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background-color 0.3s;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--secondary);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: #3b5bdb;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #20c997;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #e03e3e;
+        }
+        
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .toggle-theme {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--header-bg);
+                padding: 20px;
+                flex-direction: column;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                margin: 10px 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+                cursor: pointer;
+                font-size: 24px;
+            }
+            
+            .user-controls {
+                display: flex;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stat-box {
+                margin: 5px 0;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .card h2 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 20px;
+        }
+        
+        .habit-list {
+            list-style: none;
+        }
+        
+        .habit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .habit-item:last-child {
+            border-bottom: none;
+        }
+        
+        .habit-info {
+            flex-grow: 1;
+        }
+        
+        .habit-name {
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .habit-points {
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .level-info {
+            font-size: 14px;
+            color: var(--text);
+            opacity: 0.7;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: var(--border);
+            border-radius: 4px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0;
+            transition: width 0.5s;
+        }
+        
+        .reward-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .reward-item:last-child {
+            border-bottom: none;
+        }
+        
+        .reward-name {
+            font-weight: 500;
+        }
+        
+        .reward-cost {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-box {
+            background-color: var(--background);
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+            min-width: 80px;
+            transition: background-color 0.3s;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text);
+            opacity: 0.7;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="password"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: var(--card-bg);
+            color: var(--text);
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: background-color 0.3s;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text);
+            opacity: 0.7;
+        }
+        
+        .close-btn:hover {
+            color: var(--danger);
+            opacity: 1;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: var(--text);
+            transition: color 0.3s, border-color 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .streak-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: var(--warning);
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .level-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: var(--info);
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 10px;
+            opacity: 0.8;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        /* Calendar styles */
+        .calendar {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .calendar-day:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .calendar-day.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .calendar-day.completed {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .error-message {
+            background-color: var(--danger);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            background-color: var(--success);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        /* Challenge card styles */
+        .challenge-card {
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .challenge-card h3 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .challenge-card .description {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .challenge-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+        
+        .challenge-deadline {
+            color: var(--danger);
+        }
+        
+        .challenge-reward {
+            color: var(--success);
+        }
+        
+        /* Leaderboard styles */
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .leaderboard-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .leaderboard-user {
+            flex-grow: 1;
+        }
+        
+        .leaderboard-points {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* Friend list styles */
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .friend-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .friend-info {
+            flex-grow: 1;
+        }
+        
+        .friend-status {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .friend-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        /* User profile styles */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        
+        .profile-info h2 {
+            margin-bottom: 5px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .profile-stat {
+            text-align: center;
+        }
+        
+        .profile-stat-value {
+            font-weight: bold;
+            font-size: 20px;
+            color: var(--primary);
+        }
+        
+        .profile-stat-label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Day/night button styles */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        
+        .theme-switch {
+            display: inline-block;
+            position: relative;
+            width: 50px;
+            height: 25px;
+        }
+        
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 17px;
+            width: 17px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(25px);
+        }
+        
+        /* Customized days selection */
+        .day-selector {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .day-box {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .day-box.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Chart container */
+        .chart-container {
+            width: 100%;
+            margin-top: 20px;
+            height: 300px;
+        }
+        
+        /* Insights container */
+        .insight-card {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .insight-card h3 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">Habit<span>Reward</span></div>
+                <div class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="#" class="active" id="dashboard-link">Dashboard</a></li>
+                    <li><a href="#" id="habits-link">Habits</a></li>
+                    <li><a href="#" id="rewards-link">Rewards</a></li>
+                    <li><a href="#" id="challenges-link">Challenges</a></li>
+                    <li><a href="#" id="social-link">Social</a></li>
+                    <li><a href="#" id="stats-link">Stats</a></li>
+                </ul>
+                <div class="user-controls">
+                    <button class="btn" id="points-display">0 Points</button>
+                    <div class="theme-switch-wrapper">
+                        <label class="theme-switch" for="theme-toggle">
+                            <input type="checkbox" id="theme-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="user-profile-menu">
+                        <button class="btn btn-small btn-outline" id="login-btn" style="margin-left: 10px;">Login</button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section">
+            <div class="dashboard">
+                <div class="card">
+                    <h2>Today's Habits</h2>
+                    <ul class="habit-list" id="habit-list">
+                        <!-- Habits will be populated here -->
+                    </ul>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="btn" id="add-habit-btn">Add New Habit</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>Available Rewards</h2>
+                    <ul class="habit-list" id="reward-list">
+                        <!-- Rewards will be populated here -->
+                    </ul>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="btn btn-secondary" id="add-reward-btn">Add New Reward</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>Your Progress</h2>
+                    <div class="stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="streak-count">0</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="completed-count">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="level-display">1</div>
+                            <div class="stat-label">Level</div>
+                        </div>
+                    </div>
+                    <h3 style="margin-top: 20px;">Level Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="level-progress" style="width: 0%;"></div>
+                    </div>
+                    <p style="text-align: center; margin-top: 10px; font-size: 14px;">
+                        <span id="level-progress-text">0/100 XP</span> to next level
+                    </p>
+                    
+                    <h3 style="margin-top: 20px;">Recent Activity</h3>
+                    <ul class="habit-list" id="recent-activity">
+                        <!-- Recent activity will be populated here -->
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Active Challenges -->
+            <div class="card">
+                <h2>Active Challenges</h2>
+                <div id="active-challenges">
+                    <!-- Active challenges will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Weekly Stats Chart -->
+            <div class="card">
+                <h2>Weekly Habit Completion</h2>
+                <div class="chart-container">
+                    <canvas id="weekly-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Habits Section -->
+        <div id="habits-section" style="display: none;">
+            <div class="card">
+                <h2>Manage Your Habits</h2>
+                <div class="tabs">
+                    <div class="tab active" data-tab="all-habits">All Habits</div>
+                    <div class="tab" data-tab="by-category">By Category</div>
+                    <div class="tab" data-tab="by-frequency">By Frequency</div>
+                </div>
+                
+                <div class="tab-content active" id="all-habits">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <input type="text" id="habit-search" placeholder="Search habits..." style="max-width: 300px;">
+                        <button class="btn" id="add-habit-btn-tab">Add New Habit</button>
+                    </div>
+                    <ul class="habit-list" id="all-habits-list">
+                        <!-- All habits will be populated here -->
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="by-category">
+                    <div id="category-filters" style="margin-bottom: 20px;">
+                        <!-- Category filters will be populated here -->
+                    </div>
+                    <ul class="habit-list" id="category-habits-list">
+                        <!-- Habits by category will be populated here -->
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="by-frequency">
+                    <div class="tabs" style="border-bottom: none;">
+                        <div class="tab active" data-subtab="daily-habits">Daily</div>
+                        <div class="tab" data-subtab="weekly-habits">Weekly</div>
+                        <div class="tab" data-subtab="custom-habits">Custom</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="daily-habits">
+                        <ul class="habit-list" id="daily-habits-list">
+                            <!-- Daily habits will be populated here -->
+                        </ul>
+                    </div>
+                    
+                    <div class="tab-content" id="weekly-habits">
+                        <ul class="habit-list" id="weekly-habits-list">
+                            <!-- Weekly habits will be populated here -->
+                        </ul>
+                    </div>
+                    
+                    <div class="tab-content" id="custom-habits">
+                        <ul class="habit-list" id="custom-habits-list">
+                            <!-- Custom scheduled habits will be populated here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Habit Calendar</h2>
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <button class="btn btn-small" id="prev-month">&lt;</button>
+                        <h3 id="current-month">April 2025</h3>
+                        <button class="btn btn-small" id="next-month">&gt;</button>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar days will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Habit Insights</h2>
+                <div id="habit-insights">
+                    <!-- Habit insights will be populated here -->
+                    <div class="insight-card">
+                        <h3>You're Most Consistent With</h3>
+                        <p>Exercise habits have the highest completion rate (85%)</p>
+                    </div>
+                    <div class="insight-card">
+                        <h3>Room for Improvement</h3>
+                        <p>Reading habits are completed less frequently (45%)</p>
+                    </div>
+                    <div class="insight-card">
+                        <h3>Streak Champion</h3>
+                        <p>"Drink Water" has your longest active streak (15 days)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rewards Section -->
+        <div id="rewards-section" style="display: none;">
+            <div class="card">
+                <h2>Manage Your Rewards</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <input type="text" id="reward-search" placeholder="Search rewards..." style="max-width: 300px;">
+                    <button class="btn btn-secondary" id="add-reward-btn-tab">Add New Reward</button>
+                </div>
+                <ul class="habit-list" id="all-rewards-list">
+                    <!-- All rewards will be populated here -->
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Reward History</h2>
+                <ul class="habit-list" id="reward-history">
+                    <!-- Reward history will be populated here -->
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Create Reward Categories</h2>
+                <div class="form-group">
+                    <label for="reward-category">New Category</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="reward-category" placeholder="Enter category name">
+                        <button class="btn btn-secondary" id="add-category">Add</button>
+                    </div>
+                </div>
+                <div id="reward-categories" style="margin-top: 15px;">
+                    <!-- Reward categories will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Challenges Section -->
+        <div id="challenges-section" style="display: none;">
+            <div class="card">
+                <h2>Active Challenges</h2>
+                <div id="challenges-list">
+                    <!-- Challenges will be populated here -->
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn" id="create-challenge-btn">Create New Challenge</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Community Challenges</h2>
+                <div class="tabs">
+                    <div class="tab active" data-tab="featured-challenges">Featured</div>
+                    <div class="tab" data-tab="popular-challenges">Popular</div>
+                    <div class="tab" data-tab="new-challenges">New</div>
+                </div>
+                
+                <div class="tab-content active" id="featured-challenges">
+                    <!-- Featured challenges will be populated here -->
+                </div>
+                
+                <div class="tab-content" id="popular-challenges">
+                    <!-- Popular challenges will be populated here -->
+                </div>
+                
+                <div class="tab-content" id="new-challenges">
+                    <!-- New challenges will be populated here -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Challenge History</h2>
+                <ul class="habit-list" id="challenge-history">
+                    <!-- Challenge history will be populated here -->
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Social Section -->
+        <div id="social-section" style="display: none;">
+            <div class="card">
+                <h2>Friends</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <input type="text" id="friend-search" placeholder="Search friends..." style="max-width: 300px;">
+                    <button class="btn" id="add-friend-btn">Add Friend</button>
+                </div>
+                <div id="friends-list">
+                    <!-- Friends will be populated here -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Leaderboard</h2>
+                <div class="tabs">
+                    <div class="tab active" data-tab="global-leaderboard">Global</div>
+                    <div class="tab" data-tab="friends-leaderboard">Friends</div>
+                </div>
+                
+                <div class="tab-content active" id="global-leaderboard">
+                    <!-- Global leaderboard will be populated here -->
+                </div>
+                
+                <div class="tab-content" id="friends-leaderboard">
+                    <!-- Friends leaderboard will be populated here -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Activity Feed</h2>
+                <div id="activity-feed">
+                    <!-- Activity feed will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Section -->
+        <div id="stats-section" style="display: none;">
+            <div class="card">
+                <h2>Your Statistics</h2>
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="total-completed">0</div>
+                        <div class="stat-label">Total Completed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="total-points">0</div>
+                        <div class="stat-label">Total Points</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="longest-streak">0</div>
+                        <div class="stat-label">Longest Streak</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="completion-rate">0%</div>
+                        <div class="stat-label">Completion Rate</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Habit Progress</h2>
+                <div class="chart-container">
+                    <canvas id="habit-progress-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Points History</h2>
+                <div class="chart-container">
+                    <canvas id="points-history-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Habit Categories</h2>
+                <div class="chart-container">
+                    <canvas id="category-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Monthly Completion Rate</h2>
+                <div class="chart-container">
+                    <canvas id="monthly-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Habit Modal -->
+    <div class="modal" id="add-habit-modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-habit-modal">&times;</button>
+            <h2>Add New Habit</h2>
+            <form id="add-habit-form">
+                <div class="form-group">
+                    <label for="habit-name">Habit Name</label>
+                    <input type="text" id="habit-name" placeholder="Enter habit name" required>
+                </div>
+                <div class="form-group">
+                    <label for="habit-desc">Description (Optional)</label>
+                    <textarea id="habit-desc" placeholder="Enter habit description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="habit-category">Category</label>
+                    <select id="habit-category">
+                        <option value="health">Health</option>
+                        <option value="work">Work</option>
+                        <option value="learning">Learning</option>
+                        <option value="personal">Personal</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="habit-frequency">Frequency</label>
+                    <select id="habit-frequency">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="custom">Custom Days</option>
+                    </select>
+                </div>
+                <div class="form-group" id="custom-days-group" style="display: none;">
+                    <label>Select Days</label>
+                    <div class="day-selector">
+                        <div class="day-box" data-day="mon">M</div>
+                        <div class="day-box" data-day="tue">T</div>
+                        <div class="day-box" data-day="wed">W</div>
+                        <div class="day-box" data-day="thu">T</div>
+                        <div class="day-box" data-day="fri">F</div>
+                        <div class="day-box" data-day="sat">S</div>
+                        <div class="day-box" data-day="sun">S</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="habit-points">Points Reward</label>
+                    <input type="number" id="habit-points" placeholder="Points for completion" min="1" value="10" required>
+                </div>
+                <div class="form-group">
+                    <label for="habit-difficulty">Difficulty</label>
+                    <select id="habit-difficulty">
+                        <option value="easy">Easy (x1 points)</option>
+                        <option value="medium">Medium (x1.5 points)</option>
+                        <option value="hard">Hard (x2 points)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reminder-time">Reminder (Optional)</label>
+                    <input type="time" id="reminder-time">
+                </div>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Add Habit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Reward Modal -->
+    <div class="modal" id="add-reward-modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-reward-modal">&times;</button>
+            <h2>Add New Reward</h2>
+            <form id="add-reward-form">
+                <div class="form-group">
+                    <label for="reward-name">Reward Name</label>
+                    <input type="text" id="reward-name" placeholder="Enter reward name" required>
+                </div>
+                <div class="form-group">
+                    <label for="reward-desc">Description (Optional)</label>
+                    <textarea id="reward-desc" placeholder="Enter reward description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="reward-points">Point Cost</label>
+                    <input type="number" id="reward-points" placeholder="Points required" min="1" value="50" required>
+                </div>
+                <div class="form-group">
+                    <label for="reward-category-select">Category</label>
+                    <select id="reward-category-select">
+                        <option value="entertainment">Entertainment</option>
+                        <option value="food">Food & Drink</option>
+                        <option value="self-care">Self Care</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 10px;">Add Reward</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-login-modal">&times;</button>
+            <h2>Login to HabitReward</h2>
+            <div class="tabs">
+                <div class="tab active" data-tab="login-form">Login</div>
+                <div class="tab" data-tab="register-form">Register</div>
+            </div>
+            
+            <div class="tab-content active" id="login-form">
+                <form id="login-form-elem">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Login</button>
+                </form>
+            </div>
+            
+            <div class="tab-content" id="register-form">
+                <form id="register-form-elem">
+                    <div class="form-group">
+                        <label for="register-name">Full Name</label>
+                        <input type="text" id="register-name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" placeholder="Create a password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">Confirm Password</label>
+                        <input type="password" id="register-confirm" placeholder="Confirm your password" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Habit Details Modal -->
+    <div class="modal" id="habit-details-modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-habit-details">&times;</button>
+            <h2 id="detail-habit-name">Habit Name</h2>
+            <p id="detail-habit-desc">Description goes here</p>
+            
+            <div class="stats" style="margin: 20px 0;">
+                <div class="stat-box">
+                    <div class="stat-value" id="detail-habit-streak">0</div>
+                    <div class="stat-label">Current Streak</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="detail-habit-completion">0%</div>
+                    <div class="stat-label">Completion Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="detail-habit-points">0</div>
+                    <div class="stat-label">Total Points</div>
+                </div>
+            </div>
+            
+            <h3>Progress Calendar</h3>
+            <div class="calendar">
+                <div class="calendar-header">
+                    <button class="btn btn-small" id="detail-prev-month">&lt;</button>
+                    <h3 id="detail-current-month">April 2025</h3>
+                    <button class="btn btn-small" id="detail-next-month">&gt;</button>
+                </div>
+                <div class="calendar-grid" id="detail-calendar-grid">
+                    <!-- Calendar days will be populated here -->
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <button class="btn btn-danger" id="delete-habit">Delete Habit</button>
+                <button class="btn" id="edit-habit">Edit Habit</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification element -->
+    <div class="notification" id="notification">Notification text here</div>
+
+    <!-- Load Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    
+    <script>
+        // Main JavaScript file would be here
+        // I'll provide a skeleton implementation to make some UI elements interactive
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    body.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                themeToggle.checked = true;
+                body.setAttribute('data-theme', 'dark');
+            }
+            
+            // Navigation functionality
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const sections = {
+                'dashboard-link': document.getElementById('dashboard-section'),
+                'habits-link': document.getElementById('habits-section'),
+                'rewards-link': document.getElementById('rewards-section'),
+                'challenges-link': document.getElementById('challenges-section'),
+                'social-link': document.getElementById('social-section'),
+                'stats-link': document.getElementById('stats-section')
+            };
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    Object.values(sections).forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Show the selected section
+                    const sectionToShow = sections[this.id];
+                    if (sectionToShow) {
+                        sectionToShow.style.display = 'block';
+                    }
+                });
+            });
+            
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menu-toggle');
+            const navLinksElement = document.getElementById('nav-links');
+            
+            menuToggle.addEventListener('click', function() {
+                navLinksElement.classList.toggle('active');
+            });
+            
+            // Modal functionality
+            function setupModal(triggerBtn, modal, closeBtn) {
+                triggerBtn.addEventListener('click', function() {
+                    modal.style.display = 'flex';
+                });
+                
+                closeBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+                
+                window.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Setup modals
+            setupModal(
+                document.getElementById('add-habit-btn'), 
+                document.getElementById('add-habit-modal'),
+                document.getElementById('close-habit-modal')
+            );
+            
+            setupModal(
+                document.getElementById('add-reward-btn'), 
+                document.getElementById('add-reward-modal'),
+                document.getElementById('close-reward-modal')
+            );
+            
+            setupModal(
+                document.getElementById('login-btn'), 
+                document.getElementById('login-modal'),
+                document.getElementById('close-login-modal')
+            );
+            
+            // Tab functionality
+            function setupTabs(tabContainer) {
+                const tabs = tabContainer.querySelectorAll('.tab');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        // Remove active class from all tabs
+                        tabs.forEach(t => t.classList.remove('active'));
+                        
+                        // Add active class to clicked tab
+                        this.classList.add('active');
+                        
+                        // Hide all tab content
+                        const tabContents = document.querySelectorAll('.tab-content');
+                        tabContents.forEach(content => {
+                            content.classList.remove('active');
+                        });
+                        
+                        // Show the selected tab content
+                        const tabContentId = this.getAttribute('data-tab');
+                        const tabContent = document.getElementById(tabContentId);
+                        if (tabContent) {
+                            tabContent.classList.add('active');
+                        }
+                    });
+                });
+            }
+            
+            // Setup all tab containers
+            document.querySelectorAll('.tabs').forEach(setupTabs);
+            
+            // Custom days selector for habits
+            const habitFrequency = document.getElementById('habit-frequency');
+            const customDaysGroup = document.getElementById('custom-days-group');
+            
+            habitFrequency.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customDaysGroup.style.display = 'block';
+                } else {
+                    customDaysGroup.style.display = 'none';
+                }
+            });
+            
+            // Day box selection
+            const dayBoxes = document.querySelectorAll('.day-box');
+            dayBoxes.forEach(box => {
+                box.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+            });
+            
+            // Dummy data for weekly chart
+            const weeklyChartCtx = document.getElementById('weekly-chart').getContext('2d');
+            const weeklyChart = new Chart(weeklyChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Completed',
+                        data: [5, 3, 4, 2, 6, 4, 2],
+                        backgroundColor: getComputedStyle(document.body).getPropertyValue('--primary')
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10
+                        }
+                    }
+                }
+            });
+            
+            // Initialize habit list with dummy data
+            const habitList = [
+                { id: 1, name: 'Morning meditation', points: 10, completed: false, streak: 5, category: 'health' },
+                { id: 2, name: 'Read 30 minutes', points: 15, completed: false, streak: 3, category: 'learning' },
+                { id: 3, name: 'Drink 8 glasses of water', points: 5, completed: true, streak: 15, category: 'health' },
+                { id: 4, name: 'Code practice', points: 20, completed: false, streak: 7, category: 'work' }
+            ];
+            
+            // Initialize rewards list with dummy data
+            const rewardList = [
+                { id: 1, name: 'Watch a movie', points: 50, category: 'entertainment' },
+                { id: 2, name: 'Order takeout', points: 100, category: 'food' },
+                { id: 3, name: '30 minutes of gaming', points: 30, category: 'entertainment' }
+            ];
+            
+            // Render habit list
+            function renderHabitList() {
+                const habitListElement = document.getElementById('habit-list');
+                habitListElement.innerHTML = '';
+                
+                habitList.forEach(habit => {
+                    const habitItem = document.createElement('li');
+                    habitItem.className = 'habit-item';
+                    habitItem.innerHTML = `
+                        <div class="habit-info">
+                            <div>
+                                <span class="habit-name">${habit.name}</span>
+                                <span class="category-badge">${habit.category}</span>
+                                ${habit.streak > 0 ? `<span class="streak-badge">${habit.streak} day streak</span>` : ''}
+                            </div>
+                            <div class="level-info">+${habit.points} points</div>
+                        </div>
+                        <button class="btn btn-small ${habit.completed ? 'btn-secondary' : ''}" 
+                                onclick="toggleHabitCompletion(${habit.id})" 
+                                ${habit.completed ? 'disabled' : ''}>
+                            ${habit.completed ? 'Completed' : 'Complete'}
+                        </button>
+                    `;
+                    habitListElement.appendChild(habitItem);
+                });
+            }
+            
+            // Render reward list
+            function renderRewardList() {
+                const rewardListElement = document.getElementById('reward-list');
+                rewardListElement.innerHTML = '';
+                
+                rewardList.forEach(reward => {
+                    const rewardItem = document.createElement('li');
+                    rewardItem.className = 'reward-item';
+                    rewardItem.innerHTML = `
+                        <div>
+                            <div class="reward-name">${reward.name}</div>
+                            <div class="level-info">${reward.category}</div>
+                        </div>
+                        <div>
+                            <span class="reward-cost">${reward.points} points</span>
+                            <button class="btn btn-small btn-secondary" 
+                                    onclick="redeemReward(${reward.id})">Redeem</button>
+                        </div>
+                    `;
+                    rewardListElement.appendChild(rewardItem);
+                });
+            }
+            
+            // Global function to toggle habit completion
+            window.toggleHabitCompletion = function(habitId) {
+                const habit = habitList.find(h => h.id === habitId);
+                if (habit) {
+                    habit.completed = true;
+                    renderHabitList();
+                    showNotification(`'${habit.name}' completed! +${habit.points} points`);
+                    
+                    // Update user points
+                    const pointsDisplay = document.getElementById('points-display');
+                    const currentPoints = parseInt(pointsDisplay.textContent);
+                    pointsDisplay.textContent = `${currentPoints + habit.points} Points`;
+                }
+            };
+            
+            // Global function to redeem reward
+            window.redeemReward = function(rewardId) {
+                const reward = rewardList.find(r => r.id === rewardId);
+                const pointsDisplay = document.getElementById('points-display');
+                const currentPoints = parseInt(pointsDisplay.textContent);
+                
+                if (reward && currentPoints >= reward.points) {
+                    pointsDisplay.textContent = `${currentPoints - reward.points} Points`;
+                    showNotification(`'${reward.name}' redeemed! -${reward.points} points`);
+                } else {
+                    showNotification("Not enough points for this reward!", true);
+                }
+            };
+            
+            // Show notification
+            function showNotification(message, isError = false) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.style.backgroundColor = isError ? 
+                    getComputedStyle(document.body).getPropertyValue('--danger') : 
+                    getComputedStyle(document.body).getPropertyValue('--success');
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Render initial data
+            renderHabitList();
+            renderRewardList();
+            
+            // Add form submissions
+            document.getElementById('add-habit-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newHabit = {
+                    id: habitList.length + 1,
+                    name: document.getElementById('habit-name').value,
+                    points: parseInt(document.getElementById('habit-points').value),
+                    completed: false,
+                    streak: 0,
+                    category: document.getElementById('habit-category').value
+                };
+                
+                habitList.push(newHabit);
+                renderHabitList();
+                
+                // Close modal and reset form
+                document.getElementById('add-habit-modal').style.display = 'none';
+                this.reset();
+                showNotification('New habit added successfully!');
+            });
+            
+            document.getElementById('add-reward-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newReward = {
+                    id: rewardList.length + 1,
+                    name: document.getElementById('reward-name').value,
+                    points: parseInt(document.getElementById('reward-points').value),
+                    category: document.getElementById('reward-category-select').value
+                };
+                
+                rewardList.push(newReward);
+                renderRewardList();
+                
+                // Close modal and reset form
+                document.getElementById('add-reward-modal').style.display = 'none';
+                this.reset();
+                showNotification('New reward added successfully!');
+            });
+            
+            // Update level progress bar for demonstration
+            const levelProgress = document.getElementById('level-progress');
+            const levelProgressText = document.getElementById('level-progress-text');
+            const xpProgress = 65; // Demo value
+            levelProgress.style.width = `${xpProgress}%`;
+            levelProgressText.textContent = `${xpProgress}/100 XP`;
+        });
+    </script>
+</body>
+</html>
